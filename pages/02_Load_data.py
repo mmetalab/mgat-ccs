@@ -5,8 +5,6 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 from PIL import Image
-import scanpy as sc
-import plotly.express as px
 from rdkit import Chem
 from rdkit.Chem import Draw
 
@@ -88,7 +86,5 @@ st.write('You selected:', option)
 if option:
     compound_smiles = example_mols[option]
     m = Chem.MolFromSmiles(compound_smiles)
-    print(m)
     Draw.MolToFile(m,'mol.png')
-
     st.image('mol.png')
