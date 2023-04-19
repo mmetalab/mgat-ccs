@@ -4,16 +4,8 @@
 import numpy as np
 import pandas as pd
 import streamlit as st
-import pickle
 from PIL import Image
-import scanpy as sc
-import scipy as sp
-import matplotlib.pyplot as plt
-from matplotlib import rcParams
-from matplotlib import colors
-import seaborn as sb
-import io
-import matplotlib.pyplot as plt
+
 st.write("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Arimo');

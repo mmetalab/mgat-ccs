@@ -5,11 +5,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 from PIL import Image
-import seaborn as sb
 import pickle
-import dgl
-import torch
-from torch.utils.data import DataLoader
 from rdkit import Chem
 from rdkit.Chem import AllChem
 from rdkit.Chem import DataStructs
@@ -94,7 +90,6 @@ st.subheader('Generate molecular features with different adduct.')
 #Load data
 df = st.session_state['df']
 
-from matplotlib.pyplot import rc_context
 st.set_option('deprecation.showPyplotGlobalUse', False)
 st.markdown('Select a mode to compute the molecular features')
 
