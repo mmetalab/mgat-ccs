@@ -76,15 +76,15 @@ col1, col2 = st.columns(2)
 col1.metric("Number of molecules", mol_count)
 st.session_state['df'] = df
 
-st.write('**Select an example molecule to show the structure**')
-example_mols = dict(zip(list(df.Name)[:10],list(df.SMI)[:10]))
-option = st.selectbox(
-    '',
-    list(example_mols.keys()))
+# st.write('**Select an example molecule to show the structure**')
+# example_mols = dict(zip(list(df.Name)[:10],list(df.SMI)[:10]))
+# option = st.selectbox(
+#     '',
+#     list(example_mols.keys()))
 
-st.write('You selected:', option)
-if option:
-    compound_smiles = example_mols[option]
-    m = Chem.MolFromSmiles(compound_smiles)
-    Draw.MolToFile(m,'mol.png')
-    st.image('mol.png')
+# st.write('You selected:', option)
+# if option:
+#     compound_smiles = example_mols[option]
+#     m = Chem.MolFromSmiles(compound_smiles)
+#     Draw.MolToFile(m,'mol.png')
+#     st.image('mol.png')
