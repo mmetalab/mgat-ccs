@@ -1,2 +1,2 @@
-rdkit-pypi==2022.9.5
+rdkit-pypi==2019.09.3
 dgl==1.0.1
