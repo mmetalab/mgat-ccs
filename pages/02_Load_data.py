@@ -5,8 +5,8 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 from PIL import Image
-from rdkit import Chem
-from rdkit.Chem import Draw
+# from rdkit import Chem
+# from rdkit.Chem import Draw
 
 
 
