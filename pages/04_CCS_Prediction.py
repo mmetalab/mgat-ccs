@@ -73,7 +73,7 @@ if ccs_button: # Make button a condition.
    for t in features:
       feats.append(t[2])
    feats = np.array(feats)
-   model_file = './models/'+abbr_mode[mode]+'_rf_descriptor.sav'
+   model_file = './Models/'+abbr_mode[mode]+'_rf_descriptor.sav'
    model = pickle.load(open(model_file, 'rb'))
    result = model.predict(feats)
    df_f['ccs_md'] = result

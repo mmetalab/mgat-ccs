@@ -50,16 +50,16 @@ if uploaded_file is not None:
 
 elif use_example_file:
     st.write("An example file was loaded")
-    file = './data/example_data.csv'
+    file = './Data/example_data.csv'
     df = pd.read_csv(file,sep=',')
  
 else:
     st.write("An example file was preloaded")
-    file = './data/example_data.csv'
+    file = './Data/example_data.csv'
     df = pd.read_csv(file,sep=',')
 
 # Download example file
-with open('./data/example_data.csv', 'rb') as f:
+with open('./Data/example_data.csv', 'rb') as f:
     s = f.read()
 st.sidebar.download_button(
     label="Download example file",
