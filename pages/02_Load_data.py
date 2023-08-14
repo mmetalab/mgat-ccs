@@ -5,8 +5,8 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 from PIL import Image
-from rdkit import Chem
-from rdkit.Chem import Draw
+# from rdkit import Chem
+# from rdkit.Chem import Draw
 
 
 
@@ -83,8 +83,8 @@ option = st.selectbox(
     list(example_mols.keys()))
 
 st.write('You selected:', option)
-if option:
-    compound_smiles = example_mols[option]
-    m = Chem.MolFromSmiles(compound_smiles)
-    Draw.MolToFile(m,'mol.png')
-    st.image('mol.png')
+# if option:
+#     compound_smiles = example_mols[option]
+#     m = Chem.MolFromSmiles(compound_smiles)
+#     Draw.MolToFile(m,'mol.png')
+#     st.image('mol.png')
