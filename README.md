@@ -1,7 +1,7 @@
 # mgat-ccs
 Prediction of Collision Cross-Section Values by Multimodal Graph Attention Network for Accurate Identification of Small Molecules
 
-![workflow](https://github.com/mmetalab/mgat-ccs/blob/master/images/workflow.jpg?raw=true)
+![workflow](https://github.com/mmetalab/mgat-ccs/blob/master/images/workflow.png?raw=true)
 
 # Steps to run mgat-ccs
 
