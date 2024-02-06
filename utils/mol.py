@@ -6,7 +6,7 @@ from rdkit.Chem import AllChem
 from rdkit.Chem import DataStructs
 from sklearn import preprocessing
 from descriptastorus.descriptors import rdNormalizedDescriptors
-import pickle5 as pickle
+import pickle
 
 
 abbr_mode = {'Lipid positive mode':'lipid_pos',
