@@ -22,33 +22,13 @@ def predict_header():
                                 "width": "100%",
                                 "height": "auto",
                                 "position": "relative",
+                                "height": "300px",
+                                "overflow": "hidden"
                             },
                         ),
                     ],
-                    style={
-                        "height": "200px",
-                        "overflow": "hidden",
-                        "position": "relative",
-                    },
-                ),
-                html.H1(
-                    "CCS Prediction",
-                    style={
-                        "position": "absolute",
-                        "top": "80%",
-                        "left": "50%",
-                        "transform": "translate(-50%, -50%)",
-                        "color": "white",
-                        "text-align": "center",
-                        "width": "100%",
-                    },
-                ),
+                )
             ],
-            style={
-                "position": "relative",
-                "text-align": "center",
-                "color": "white",
-            },
         )
     return layout
 
@@ -58,10 +38,11 @@ def predict_layout():
             html.Br(),
             html.H3(
                 "\nPerform CCS prediction",
-                style={"textAlign": "center", "color": "#082446"},
+                style={'width': '200%', "textAlign": "center", "color": "#082446"},
             ),
+            html.Br(),
+            html.Div(id='container-button-ccs'),
             dbc.Button('Click to Run', id='btn-nclicks-ccs', n_clicks=0),
-            html.Div(id='container-button-ccs')
         ]
     )
     return layout
@@ -114,13 +95,13 @@ def update_graph(uploaded_df):
 )
 
 def displayClick(btn1):
-    msg = "CCS prediction is not yet performed. Click the button to run featurization."
+    msg = "CCS prediction is not yet performed. Click the button to run CCS prediction."
     hidden = True
     if "btn-nclicks-ccs" == ctx.triggered_id:
         msg = "CCS prediction is performed." 
         hidden = False
     return html.Div(
-            [html.Div(msg),
+            [html.Div(msg,style={'width': '200%',"color": "#082446"}),
              html.Div(id='print-data-upload', hidden=hidden)
             ]
         )

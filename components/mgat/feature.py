@@ -24,33 +24,13 @@ def feature_header():
                                 "width": "100%",
                                 "height": "auto",
                                 "position": "relative",
+                                "height": "300px",
+                                "overflow": "hidden"
                             },
                         ),
                     ],
-                    style={
-                        "height": "200px",
-                        "overflow": "hidden",
-                        "position": "relative",
-                    },
-                ),
-                html.H1(
-                    "Molecular Featurization",
-                    style={
-                        "position": "absolute",
-                        "top": "80%",
-                        "left": "50%",
-                        "transform": "translate(-50%, -50%)",
-                        "color": "white",
-                        "text-align": "center",
-                        "width": "100%",
-                    },
-                ),
+                )
             ],
-            style={
-                "position": "relative",
-                "text-align": "center",
-                "color": "white",
-            },
         )
     return layout
 
@@ -69,8 +49,9 @@ def feature_layout():
             html.Br(),
             html.H3(
                 "\nPerform molecular featurization",
-                style={"textAlign": "center", "color": "#082446"},
+                style={'width': '200%', "textAlign": "center", "color": "#082446"},
             ),
+            html.Br(),
             dcc.Dropdown(id="my-mode-dropdown",
             options=[
                 {'label': mode_dict_keys[0], 'value': mode_dict_keys[0]},
@@ -79,14 +60,14 @@ def feature_layout():
                 {'label': mode_dict_keys[3], 'value': mode_dict_keys[3]},
                 {'label': mode_dict_keys[4], 'value': mode_dict_keys[4]},
             ],
-            placeholder="Select a mode",
+            placeholder="Select an ion mode",
+            style={'width': '100%'},
             ),
             html.Br(),
             html.Div(id='mode-output'),
             html.Br(),
+            html.Div(id='container-button-feats'),
             dbc.Button('Click to Run', id='btn-nclicks-feats', n_clicks=0),
-            html.Br(),
-            html.Div(id='container-button-feats')
         ]
     )
     return layout
@@ -110,8 +91,8 @@ def displayClick(btn1):
         msg = "Molecular featurization is performed." 
         hidden = False
     return html.Div(
-            [html.Br(),
-             html.Div(msg),
+            [
+             html.Div(msg,style={'width': '200%',"color": "#082446"}),
              html.Div(id='print-data-mol', hidden=hidden)
             ]
         )

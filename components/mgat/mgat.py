@@ -104,7 +104,7 @@ def mgat_layout():
                             "padding": "10px",
                         },
                         children=[
-                            html.Div(id="mgat_analysis_tab_content_layout"),
+                            html.Div(id="mgat_analysis_tab_1_layout"),
                         ],
                     ),
                     html.Div(
@@ -113,7 +113,16 @@ def mgat_layout():
                             "padding": "10px",
                         },
                         children=[
-                            html.Div(id="mgat_analysis_tab_plot_layout"),
+                            html.Div(id="mgat_analysis_tab_2_layout"),
+                        ],
+                    ),
+                    html.Div(
+                        style={
+                            "width": "70%",
+                            "padding": "10px",
+                        },
+                        children=[
+                            html.Div(id="mgat_analysis_tab_3_layout"),
                         ],
                     ),
                 ],
@@ -130,9 +139,9 @@ def mgat_layout():
 @my_app.callback(
     [
         Output(
-            component_id="mgat_analysis_tab_content_layout", component_property="children"
+            component_id="mgat_analysis_tab_1_layout", component_property="children"
         ),
-        Output(component_id="mgat_analysis_tab_plot_layout", component_property="children")
+        Output(component_id="mgat_analysis_tab_2_layout", component_property="children")
     ],
     [Input(component_id="mgat_analysis_selected_tab", component_property="active_tab")],
 )

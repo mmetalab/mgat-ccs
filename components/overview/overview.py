@@ -62,7 +62,7 @@ def overview_layout():
                 mathjax=True,
             ),
             html.Br(),
-            card(),
+            # card(),
         ]
     )
 

@@ -77,6 +77,7 @@ my_app.layout = html.Div(
         dcc.Location(id="url"),
         sidebar,
         dcc.Store(id='loaded-data',storage_type='local',data={}),
+        dcc.Store(id='loaded-data-input',storage_type='local',data={}),
         dcc.Store(id='processed-feature',storage_type='local',data={}),
         html.Div(
             [
