@@ -1,16 +1,8 @@
-import plotly.express as px
 from dash import html, Input, Output, dcc, State, Dash, dash_table, callback, ctx
 import pandas as pd
 import numpy as np
 import dash_bootstrap_components as dbc
-import dash_uploader as du
-import base64
-import datetime
-import io
-import json
-# file imports
-from maindash import my_app
-from utils.file_operation import read_file_as_str
+from maindash import app
 from utils.mol import *
 
 def feature_header():
@@ -19,7 +11,7 @@ def feature_header():
                 html.Div(
                     [
                         html.Img(
-                            src="https://images.unsplash.com/photo-1614854262340-ab1ca7d079c7?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                            src="https://github.com/mmetalab/mgat-ccs/raw/main/images/ccs-prediction-tab.png",
                             style={
                                 "width": "100%",
                                 "height": "auto",
@@ -48,10 +40,11 @@ def feature_layout():
         [
             html.Br(),
             html.H3(
-                "\nPerform molecular featurization",
-                style={'width': '200%', "textAlign": "center", "color": "#082446"},
+                "\nPerform CCS Value Prediction",
+                style={'width': '100%', "textAlign": "center", "color": "#082446"},
             ),
             html.Br(),
+            html.H5("\nSelect the ion mode and IMS technique for featurization."),
             dcc.Dropdown(id="my-mode-dropdown",
             options=[
                 {'label': mode_dict_keys[0], 'value': mode_dict_keys[0]},
@@ -64,6 +57,16 @@ def feature_layout():
             style={'width': '100%'},
             ),
             html.Br(),
+            html.Div(id='ims-output'),
+            dcc.Dropdown(id="my-ims-dropdown",
+            options=[
+                {'label': 'TIMS', 'value': 'TIMS'},
+                {'label': 'DTMS', 'value': 'DTMS'},
+            ],
+            placeholder="Select an IMS technique",
+            style={'width': '100%'},
+            ),
+            html.Br(),
             html.Div(id='mode-output'),
             html.Br(),
             html.Div(id='container-button-feats'),
@@ -72,59 +75,62 @@ def feature_layout():
     )
     return layout
 
-@my_app.callback(
+@app.callback(
     Output('mode-output', 'children'),
-    Input('my-mode-dropdown', 'value')
+    Input('my-mode-dropdown', 'value'),
+    Input('my-ims-dropdown', 'value')
 )
-def update_output(value):
-    return f'You have selected {value}'
+def update_output(value1,value2):
+    return f'You have selected {value1} by {value2}.'
 
-@my_app.callback(
+@app.callback(
     Output('container-button-feats', 'children'),
     Input('btn-nclicks-feats', 'n_clicks')
 )
 
 def displayClick(btn1):
-    msg = "Molecular featurization is not yet performed. Click the button to run featurization."
+    msg = "CCS value prediction is not yet performed. Click button to run prediction."
     hidden = True
     if "btn-nclicks-feats" == ctx.triggered_id:
-        msg = "Molecular featurization is performed." 
+        msg = "CCS value prediction is performed." 
         hidden = False
     return html.Div(
             [
-             html.Div(msg,style={'width': '200%',"color": "#082446"}),
-             html.Div(id='print-data-mol', hidden=hidden)
+             html.H5(id='print-data-mol', hidden=hidden),
+             html.Div(msg,style={'width': '100%',"color": "#082446"})
             ]
         )
 
-@my_app.callback(
+@app.callback(
     Output('processed-feature', 'data'),
     Input('my-mode-dropdown', 'value'),
+    Input('loaded-data-input', 'data'),
     Input('loaded-data', 'data')
 )
 
-def feats_convert(value,uploaded_df):
-    df = pd.read_json(uploaded_df, orient='split')
+def feats_convert(value,loaded_df,uploaded_df):
+    if loaded_df is not None:
+        df = pd.read_json(loaded_df, orient='split')
+    if uploaded_df is not None:
+        df = pd.read_json(uploaded_df, orient='split')
     temp = pd.DataFrame(columns=['Adduct'])
     temp['Adduct'] = list(mode_dict[value].keys())
     df = df.merge(temp, how='cross')
     df_f = encode_adduct(df,mode_dict[value])
-    df_f.to_json(orient='split')
-    return df_f
+    return df_f.to_json(orient='split')
 
-@my_app.callback(Output('print-data-mol', 'children'),
-              Input('processed-feature', 'data'))
+@app.callback(Output('print-data-mol', 'children'),
+              Input('processed-feature', 'data'),
+              Input('my-mode-dropdown', 'value'))
 
-def feats_update(processed_df):
-    df = pd.read_json(processed_df, orient='split')
+def feats_update(processed_df,value):
+    df_f = pd.read_json(processed_df, orient='split')
     y_adduct,feats_fp,feats_md = feature_generator(df_f)
-    features,labels = generate_data_loader(df,feats_md,feats_fp,opt='test')
-
+    features,labels = generate_data_loader(df_f,feats_md,feats_fp,opt='test')
     result_df = predict_ccs(features,value,df_f)
-    
+
     return html.Div([
-        # html.Hr(),  # horizontal line
-        html.Div('The first few lines of the uploaded molecule data.'),
+        html.Div('The predicted CCS value for each molecule.'),
         dbc.Container(
         [
             dbc.Spinner(
@@ -133,7 +139,7 @@ def feats_update(processed_df):
                     id='dash-table',
                     columns=[
                         {'name': column, 'id': column}
-                        for column in df.columns
+                        for column in result_df.columns
                     ],
                     page_size=10,
                     style_header={

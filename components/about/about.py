@@ -7,7 +7,7 @@ from dash import dcc
 import dash_bootstrap_components as dbc
 
 # file imports
-from maindash import my_app
+from maindash import app
 from utils.file_operation import read_file_as_str
 
 
@@ -86,3 +86,4 @@ def about_layout():
     )
 
     return layout
+

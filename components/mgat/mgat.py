@@ -1,24 +1,16 @@
-# dash imports
 
-from dash import html
-from dash import Input
-from dash import Output
-from dash import dcc
+
+from dash import html, Input, Output, dcc, Dash, callback
 import dash_bootstrap_components as dbc
 from utils.file_operation import read_file_as_str
-# file imports
-from maindash import my_app
+from maindash import app
 import dash_uploader as du
 import pandas as pd
-import dash
 from dash.dependencies import State
-from dash import Dash, dash_table, callback
-import base64
-import datetime
-import io
+import dash_table
 from components.mgat.load import load_info
 from components.mgat.feature import feature_info
-from components.mgat.predict import predict_info
+
 #######################################
 # Layout
 #######################################
@@ -75,17 +67,13 @@ def mgat_layout():
                                 id="mgat_analysis_selected_tab",
                                 children=[
                                     dbc.Tab(
-                                        label="Load Data",
+                                        label="Load Data and Molecular Featurization",
                                         tab_id="analysis_load",
                                     ),
                                     dbc.Tab(
-                                        label="Molecular Featurization",
+                                        label="CCS Value Prediction",
                                         tab_id="analysis_feature",
-                                    ),
-                                    dbc.Tab(
-                                        label="CCS Prediction",
-                                        tab_id="analysis_predict",
-                                    ),        
+                                    ),       
                                 ],
                                 active_tab="analysis_load",
                             ),
@@ -116,15 +104,6 @@ def mgat_layout():
                             html.Div(id="mgat_analysis_tab_2_layout"),
                         ],
                     ),
-                    html.Div(
-                        style={
-                            "width": "70%",
-                            "padding": "10px",
-                        },
-                        children=[
-                            html.Div(id="mgat_analysis_tab_3_layout"),
-                        ],
-                    ),
                 ],
             ),
             html.Br()
@@ -136,7 +115,7 @@ def mgat_layout():
 #######################################
 # Callbacks
 #######################################
-@my_app.callback(
+@app.callback(
     [
         Output(
             component_id="mgat_analysis_tab_1_layout", component_property="children"
@@ -159,7 +138,5 @@ def render_tab(tab_choice):
         return load_info()
     if tab_choice == "analysis_feature":
         return feature_info()
-    if tab_choice == "analysis_predict":
-        return predict_info()
 
 

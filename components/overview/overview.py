@@ -7,7 +7,7 @@ from dash import dcc
 import dash_bootstrap_components as dbc
 
 # file imports
-from maindash import my_app
+from maindash import app
 from utils.file_operation import read_file_as_str
 
 
@@ -60,6 +60,16 @@ def overview_layout():
             dcc.Markdown(
                 children=read_file_as_str("./utils/markdown/overview/overview.md"),
                 mathjax=True,
+            ),
+            html.Br(),
+            html.Img(
+                src="https://github.com/mmetalab/mgat-ccs/raw/main/images/TocFigure.png",
+                style={
+                    "width": "1200px",
+                    "display": "block",
+                    "margin-left": "auto",
+                    "margin-right": "auto",
+                },
             ),
             html.Br(),
             # card(),

@@ -1,15 +1,9 @@
-import plotly.express as px
 from dash import html, Input, Output, dcc, State, Dash, dash_table, callback
 import pandas as pd
-import numpy as np
 import dash_bootstrap_components as dbc
-import dash_uploader as du
 import base64
-import datetime
 import io
-# file imports
-from maindash import my_app
-from utils.file_operation import read_file_as_str
+from maindash import app
 import pandas as pd
 
 
@@ -19,7 +13,7 @@ def load_header():
                 html.Div(
                     [
                         html.Img(
-                            src="https://images.unsplash.com/photo-1614854262340-ab1ca7d079c7?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                            src="https://github.com/mmetalab/mgat-ccs/raw/main/images/load-data-tab.png",
                             style={
                                 "width": "100%",
                                 "height": "auto",
@@ -39,18 +33,18 @@ def load_preset_layout():
         [
             html.H3(
                 "Load Data for CCS Prediction",
-                style={'width': '200%', "textAlign": "center", "color": "#082446"},
+                style={'width': '100%', "textAlign": "center", "color": "#082446"},
             ),
             html.Br(),
             html.H5(
                 "\nInput the molecule data",
-                style={'width': '200%', "textAlign": "center", "color": "#082446"},
+                style={'width': '100%', "textAlign": "center", "color": "#082446"},
             ),
             html.Div([
                 dcc.Textarea(
                     id='textarea-state-example',
-                    value='Compound Name/ID,SMILE\nDaidzein,C1=CC(=CC=C1C2=COC3=C(C2=O)C=CC(=C3)O)O',
-                    style={'width': '200%', 'height': 50},
+                    value='Acetylcarnitine,CC(=O)O[C@H](CC(=O)[O-])C[N+](C)(C)C\nDaidzein,C1=CC(=CC=C1C2=COC3=C(C2=O)C=CC(=C3)O)O',
+                    style={'width': '100%', 'height': 50},
                 ),
                 dbc.Button('Submit', id='textarea-state-example-button', n_clicks=0),
                 html.Div(id='textarea-state-example-output')
@@ -60,20 +54,20 @@ def load_preset_layout():
     return layout
 
 # Create a callback to update the dataframe when the button is clicked
-@my_app.callback(Output('loaded-data-input', 'data'),
+@app.callback(Output('loaded-data-input', 'data'),
     Input('textarea-state-example-button', 'n_clicks'),
     State('textarea-state-example', 'value'))
 
 def update_output(n_clicks, value):
     if n_clicks > 0:
-        df = pd.DataFrame(columns = ['Name', 'Age'])
+        df = pd.DataFrame(columns = ['Name', 'SMI'])
         for i in value.split('\n'):
             i = i.split(',')
-            row = pd.DataFrame({'Name': i[0], 'Age': i[1]}, index=[0])
+            row = pd.DataFrame({'Name': i[0], 'SMI': i[1]}, index=[0])
             df = pd.concat([df, row]).reset_index(drop=True)
         return df.to_json(orient='split')
 
-@my_app.callback(Output('textarea-state-example-output', 'children'),
+@app.callback(Output('textarea-state-example-output', 'children'),
     Input('loaded-data-input', 'data'))
 
 def update_graph_tt(uploaded_df):
@@ -82,7 +76,7 @@ def update_graph_tt(uploaded_df):
     print(df)
     return html.Div([
         html.Hr(),  # horizontal line
-        html.H5('The first few lines of the uploaded molecule data.'),
+        html.H5('Loaded molecule data.'),
         dbc.Container(
         [
             dbc.Spinner(
@@ -118,7 +112,7 @@ def load_layout():
             html.Br(),
             html.H5(
                 "\nUpload the molecule data file",
-                style={'width': '200%',"textAlign": "center", "color": "#082446"},
+                style={'width': '100%',"textAlign": "center", "color": "#082446"},
             ),
             html.Div([
                 dcc.Upload(
@@ -128,73 +122,23 @@ def load_layout():
                         html.A('Select Files')
                     ]),
                     style={
-                        'width': '200%',
+                        'width': '100%',
                         'height': '50px',
                         'borderStyle': 'dashed',
                         'borderRadius': '5px',
                         'textAlign': 'center',
                     },
                     # Allow multiple files to be uploaded
-                    multiple=False
+                    multiple=True
                 ),
                 html.Div(id='output-data-upload'),
-            ])
+                
+            ],
+            style={'width': '100%', "textAlign": "center", "color": "#082446"},)
         ]
     )
 
     return layout
-
-def parse_contents(contents):
-
-    content_type, content_string = contents.split(',')
-    decoded = base64.b64decode(content_string)
-    try:
-        if 'csv' in contents:
-            # Assume that the user uploaded a CSV file
-            df = pd.read_csv(
-                io.StringIO(decoded.decode('utf-8')))
-        elif 'xls' in contents:
-            # Assume that the user uploaded an excel file
-            df = pd.read_excel(io.BytesIO(decoded))
-    except Exception as e:
-        print(e)
-        return html.Div([
-            'There was an error processing this file.'
-        ])
-    return html.Div([
-        html.Hr(),  # horizontal line
-        html.H5('The first few lines of the uploaded molecule data.'),
-        dbc.Container(
-        [
-            dbc.Spinner(
-                dash_table.DataTable(
-                    df.to_dict('records'),
-                    id='dash-table',
-                    columns=[
-                        {'name': column, 'id': column}
-                        for column in df.columns
-                    ],
-                    page_size=10,
-                    style_header={
-                        'font-family': 'Arial',
-                        'font-weight': 'bold',
-                        'text-align': 'center'
-                    },
-                    style_table={'overflowX': 'auto'},
-                    style_data={
-                        'font-family': 'Arial',
-                        'text-align': 'center'
-                    }
-                )
-            )
-        ],
-        style={
-            'font-family': 'Arial',
-            'margin-top': '50px'
-        }
-    ),
-        html.Hr(),  # horizontal line
-    ])
 
 def parse_contents_df(contents):
 
@@ -215,7 +159,7 @@ def parse_contents_df(contents):
         ])
     return df
 
-@my_app.callback(Output('loaded-data', 'data'),
+@app.callback(Output('loaded-data', 'data'),
               Input('upload-data', 'contents'))
 
 def update_output(list_of_contents):
@@ -224,10 +168,8 @@ def update_output(list_of_contents):
             parse_contents_df(c) for c in list_of_contents]
         return tt[0].to_json(orient='split')
 
-# @my_app.callback(Output('output-data-upload', 'children'),
-#               Input('upload-data', 'contents'))
 
-@my_app.callback(Output('output-data-upload', 'children'),
+@app.callback(Output('output-data-upload', 'children'),
               Input('loaded-data', 'data'))
 
 def update_graph(uploaded_df):
@@ -235,7 +177,7 @@ def update_graph(uploaded_df):
     df = pd.read_json(uploaded_df, orient='split')
     return html.Div([
         html.Hr(),  # horizontal line
-        html.H5('The first few lines of the uploaded molecule data.'),
+        html.H5('Uploaded molecule data.'),
         dbc.Container(
         [
             dbc.Spinner(
@@ -262,13 +204,12 @@ def update_graph(uploaded_df):
         ],
         style={
             'font-family': 'Arial',
-            'margin-top': '50px'
+            'width': '100%',
+            # 'margin-top': '50px'
         }
     ),
         html.Hr(),  # horizontal line
     ])
-
-
 
 def load_info():
     return (load_header(),load_preset_layout())

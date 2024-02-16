@@ -8,7 +8,7 @@ from dash import dcc
 import dash_bootstrap_components as dbc
 from dash import html, Input, Output, dcc, State, Dash, dash_table, callback, ctx
 # file imports
-from maindash import my_app
+from maindash import app
 from components.overview import overview
 from components.mgat import mgat
 from components.about import about
@@ -16,7 +16,7 @@ from components.about import about
 #######################################
 # Initial Settings
 #######################################
-server = my_app.server
+server = app.server
 
 CONTENT_STYLE = {
     "transition": "margin-left .1s",
@@ -72,7 +72,7 @@ sidebar = html.Div(
     className="sidebar",
 )
 
-my_app.layout = html.Div(
+app.layout = html.Div(
     [
         dcc.Location(id="url"),
         sidebar,
@@ -90,7 +90,7 @@ my_app.layout = html.Div(
     ]
 )
 
-@my_app.callback(Output("page-content", "children"), [Input("url", "pathname")])
+@app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 
 def render_page_content(pathname):
     if pathname == "/":
@@ -125,4 +125,4 @@ def render_page_content(pathname):
     )
 
 if __name__ == "__main__":
-    my_app.run_server(host='0.0.0.0', port=8080)
+    app.run_server(host='0.0.0.0', port=8080)
