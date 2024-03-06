@@ -58,3 +58,4 @@ torch == 2.2.1
 dgl == 2.1.0
 dgllife == 0.3.2
 PyYAML == 6.0.1
+pydantic == 2.6.3
