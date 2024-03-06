@@ -57,3 +57,4 @@ zipp==3.17.0
 torch == 2.2.1
 dgl == 2.1.0
 dgllife == 0.3.2
+PyYAML == 6.0.1

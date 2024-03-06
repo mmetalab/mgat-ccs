@@ -70,10 +70,10 @@ def feature_layout():
             style={'width': '100%'},
             ),
             html.Br(),
-            html.Div(id='mode-output'),
+            html.H5(id='mode-output'),
             html.Br(),
-            html.Div(id='container-button-feats'),
             dbc.Button('Click to Run', id='btn-nclicks-feats', n_clicks=0),
+            html.Div(id='container-button-feats'), 
         ]
     )
     return layout
@@ -97,12 +97,12 @@ def displayClick(btn1):
     if "btn-nclicks-feats" == ctx.triggered_id:
         msg = "CCS value prediction is performed." 
         hidden = False
-    return html.Div(
-            [
-             html.H5(id='print-data-mol', hidden=hidden),
-             html.Div(msg,style={'width': '100%',"color": "#082446"})
-            ]
-        )
+        return html.Div(
+                [
+                html.H5(id='print-data-mol', hidden=hidden),
+                html.Div(msg,style={'width': '100%',"color": "#082446"})
+                ]
+            )
 
 @app.callback(
     Output('processed-feature', 'data'),
@@ -154,6 +154,7 @@ def feats_update(processed_df,value):
 def print_result(result_df):
     result_df = pd.read_json(result_df, orient='split')
     return html.Div([
+        html.Br(),
         html.Div('The predicted CCS value for each molecule.'),
         dbc.Container(
         [
@@ -187,7 +188,7 @@ def print_result(result_df):
         html.Hr(),  # horizontal line
         html.Div(
     [
-        html.Button("Download CSV", id="btn_csv"),
+        dbc.Button("Download CSV", id="btn_csv", n_clicks=0),
         dcc.Download(id="download-dataframe-csv"),
     ]
     )
@@ -196,12 +197,13 @@ def print_result(result_df):
 @callback(
     Output("download-dataframe-csv", "data"),
     Input("btn_csv", "n_clicks"),
-    Input('processed-feature', 'data'),
+    Input('predicted-ccs', 'data'),
     prevent_initial_call=True,
 )
 def func(n_clicks,df):
     df = pd.read_json(df, orient='split')
-    return dcc.send_data_frame(df.to_csv, "predicted_ccs.csv")
+    if "btn_csv" == ctx.triggered_id:   
+        return dcc.send_data_frame(df.to_csv, "predicted_ccs.csv")
 
 def feature_info():
     return (feature_header(),feature_layout())
