@@ -4,6 +4,8 @@ import numpy as np
 import dash_bootstrap_components as dbc
 from maindash import app
 from utils.mol import *
+import __main__
+
 
 def feature_header():
     layout = html.Div(
@@ -30,11 +32,13 @@ lipid_pos_dict = {'[M+H-H2O]+': 0, '[M+H]+': 1, '[M+K]+': 2, '[M+NH4]+': 3, '[M+
 lipid_neg_dict = {'[M+CH3COO]-': 0, '[M+HCOO]-': 1, '[M+Na-2H]-': 2, '[M-CH3]-': 3, '[M-H]-': 4}
 met_pos_dict = {'[M+H-H2O]+': 0, '[M+H]+': 1, '[M+K]+': 2, '[M+NH4]+': 3, '[M+Na]+': 4}
 met_neg_dict = {'[M+Na-2H]-': 0, '[M-H]-': 1}
-drug_pos_dict = {'[M+H-H2O]+': 0, '[M+H]+': 1, '[M+K]+': 2, '[M+Na]+': 3}
-mode_dict = {'Lipid positive mode':lipid_pos_dict,'Lipid negative mode':lipid_neg_dict,'Metabolite positive mode':met_pos_dict,'Metabolite negative mode':met_neg_dict,'Drug mode (beta)':drug_pos_dict}
+mode_dict = {'lipid_pos':lipid_pos_dict,'lipid_neg':lipid_neg_dict,'mets_pos':met_pos_dict,'mets_neg':met_neg_dict}
+mode_abbr = {'lipid positive mode':'lipid_pos','lipid negative mode':'lipid_neg','metabolite positive mode':'mets_pos','metabolite negative mode':'mets_neg'}
 mode_dict_keys = list(mode_dict.keys())
 mode_dict_values = list(mode_dict.values())
 
+
+      
 def feature_layout():
     layout = html.Div(
         [
@@ -47,11 +51,10 @@ def feature_layout():
             html.H5("\nSelect the ion mode and IMS technique for featurization."),
             dcc.Dropdown(id="my-mode-dropdown",
             options=[
-                {'label': mode_dict_keys[0], 'value': mode_dict_keys[0]},
-                {'label': mode_dict_keys[1], 'value': mode_dict_keys[1]},
-                {'label': mode_dict_keys[2], 'value': mode_dict_keys[2]},
-                {'label': mode_dict_keys[3], 'value': mode_dict_keys[3]},
-                {'label': mode_dict_keys[4], 'value': mode_dict_keys[4]},
+                {'label': 'Lipid positive mode', 'value': 'lipid positive mode'},
+                {'label': 'Lipid negative mode', 'value': 'lipid negative mode'},
+                {'label': 'Metabolite positive mode', 'value': 'metabolite positive mode'},
+                {'label': 'Metabolite negative mode', 'value': 'metabolite negative mode'},
             ],
             placeholder="Select an ion mode",
             style={'width': '100%'},
@@ -80,8 +83,8 @@ def feature_layout():
     Input('my-mode-dropdown', 'value'),
     Input('my-ims-dropdown', 'value')
 )
-def update_output(value1,value2):
-    return f'You have selected {value1} by {value2}.'
+def update_output(ionmode,ims):
+    return f'You have selected {ionmode} by {ims}.'
 
 @app.callback(
     Output('container-button-feats', 'children'),
@@ -113,22 +116,43 @@ def feats_convert(value,loaded_df,uploaded_df):
         df = pd.read_json(loaded_df, orient='split')
     if uploaded_df is not None:
         df = pd.read_json(uploaded_df, orient='split')
+    mode = mode_abbr[value]
+    moldata = cmp_classify(df,mode)
     temp = pd.DataFrame(columns=['Adduct'])
-    temp['Adduct'] = list(mode_dict[value].keys())
-    df = df.merge(temp, how='cross')
-    df_f = encode_adduct(df,mode_dict[value])
+    temp['Adduct'] = list(mode_dict[mode].keys())
+    moldata = moldata.merge(temp, how='cross')
+    df_f = encode_adduct(moldata,mode)
     return df_f.to_json(orient='split')
 
-@app.callback(Output('print-data-mol', 'children'),
+@app.callback(Output('predicted-ccs', 'data'),
               Input('processed-feature', 'data'),
               Input('my-mode-dropdown', 'value'))
 
 def feats_update(processed_df,value):
     df_f = pd.read_json(processed_df, orient='split')
-    y_adduct,feats_fp,feats_md = feature_generator(df_f)
-    features,labels = generate_data_loader(df_f,feats_md,feats_fp,opt='test')
-    result_df = predict_ccs(features,value,df_f)
+    feats_md = feature_generator(df_f)
+    features,labels = generate_data_loader(df_f,feats_md,option='predict')
+    mode = mode_abbr[value]
+    model_file = './models/'+mode+'_chkpts.pth'
+    setattr(__main__, "Model", Model)
+    setattr(__main__, "MPLayer", MPLayer)
+    checkpoint = torch.load(model_file)
+    model = load_checkpoint(checkpoint)
+    with open("./models/"+mode+"_mgat-ccs-model.pkl", "rb") as f:
+        gbmodel = pickle.load(f)
+    test_set,test_adduct_type,test_adduct_code,test_class_code = get_ccs_pair(features)
+    test_feats_indices, test_feats_embed = model_embed_ccs(model,test_set)
+    y_pred = gbmodel.predict(test_feats_embed)
+    df_f['CCS'] = np.asarray(y_pred)
+    df_f['CCS'] = df_f['CCS'].round(decimals=3)
+    result_df = df_f[['Name','SMI','CCS','Adduct','Compound Class']]
+    return result_df.to_json(orient='split')
 
+@app.callback(Output('print-data-mol', 'children'),
+              Input('predicted-ccs', 'data'))
+
+def print_result(result_df):
+    result_df = pd.read_json(result_df, orient='split')
     return html.Div([
         html.Div('The predicted CCS value for each molecule.'),
         dbc.Container(
@@ -161,7 +185,23 @@ def feats_update(processed_df,value):
         }
     ),
         html.Hr(),  # horizontal line
+        html.Div(
+    [
+        html.Button("Download CSV", id="btn_csv"),
+        dcc.Download(id="download-dataframe-csv"),
+    ]
+    )
     ])
+
+@callback(
+    Output("download-dataframe-csv", "data"),
+    Input("btn_csv", "n_clicks"),
+    Input('processed-feature', 'data'),
+    prevent_initial_call=True,
+)
+def func(n_clicks,df):
+    df = pd.read_json(df, orient='split')
+    return dcc.send_data_frame(df.to_csv, "predicted_ccs.csv")
 
 def feature_info():
     return (feature_header(),feature_layout())

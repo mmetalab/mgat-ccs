@@ -79,6 +79,7 @@ app.layout = html.Div(
         dcc.Store(id='loaded-data',storage_type='local',data={}),
         dcc.Store(id='loaded-data-input',storage_type='local',data={}),
         dcc.Store(id='processed-feature',storage_type='local',data={}),
+        dcc.Store(id='predicted-ccs',storage_type='local',data={}),
         html.Div(
             [
                 dash.page_container,
