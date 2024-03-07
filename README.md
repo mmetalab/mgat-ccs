@@ -3,13 +3,6 @@ Prediction of Collision Cross-Section Values by Multimodal Graph Attention Netwo
 
 ![workflow](https://github.com/mmetalab/mgat-ccs/blob/main/images/workflow.png)
 
-# Steps to run mgat-ccs
+# mgat-ccs on live
 
-## Install core packages via pip
-Run 'pip install streamlit pandas numpy seaborn matplotlib sklearn' at the command line to install the necessary packages. Streamlit builds the web app, pandas and numpy support data manipulation and math operations. These core packages need to be installed prior to importing and using them.
-
-## Run code
-Execute 'streamlit run 01_MGAT_CCS.py' to run the first script. This script loads the main page of MGAT-CCS.
-
-
-
+Please check the website https://mgat-ccs-web.onrender.com/ to perform CCS prediction. 
