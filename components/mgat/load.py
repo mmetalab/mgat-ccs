@@ -43,8 +43,10 @@ def load_preset_layout():
             html.Div([
                 dcc.Textarea(
                     id='textarea-state-example',
-                    value='Acetylcarnitine,CC(=O)O[C@H](CC(=O)[O-])C[N+](C)(C)C\nDaidzein,C1=CC(=CC=C1C2=COC3=C(C2=O)C=CC(=C3)O)O',
-                    style={'width': '100%', 'height': 50},
+                    value='Acetylcarnitine,CC(=O)O[C@H](CC(=O)[O-])C[N+](C)(C)C\nDaidzein,C1=CC(=CC=C1C2=COC3=C(C2=O)C=CC(=C3)O)O\n'
+                    'Chlortetracycline,C[C@]1(c2c(ccc(c2C(=O)C3=C([C@]4([C@@H](C[C@@H]31)[C@@H](C(=C(C4=O)C(=N)O)O)N(C)C)O)O)O)Cl)O\n'
+                    'Palmitic acid,CCCCCCCCCCCCCCCC(=O)O',
+                    style={'width': '100%', 'height': 100},
                 ),
                 dbc.Button('Submit', id='textarea-state-example-button', n_clicks=0),
                 html.Div(id='textarea-state-example-output')
@@ -123,7 +125,7 @@ def load_layout():
                     ]),
                     style={
                         'width': '100%',
-                        'height': '50px',
+                        'height': '100px',
                         'borderStyle': 'dashed',
                         'borderRadius': '5px',
                         'textAlign': 'center',

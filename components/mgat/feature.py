@@ -63,8 +63,8 @@ def feature_layout():
             html.Div(id='ims-output'),
             dcc.Dropdown(id="my-ims-dropdown",
             options=[
-                {'label': 'TIMS', 'value': 'TIMS'},
-                {'label': 'DTMS', 'value': 'DTMS'},
+                {'label': 'TWIMS', 'value': 'TWIMS'},
+                {'label': 'DTIMS', 'value': 'DTIMS'},
             ],
             placeholder="Select an IMS technique",
             style={'width': '100%'},
@@ -126,26 +126,28 @@ def feats_convert(value,loaded_df,uploaded_df):
 
 @app.callback(Output('predicted-ccs', 'data'),
               Input('processed-feature', 'data'),
-              Input('my-mode-dropdown', 'value'))
+              Input('my-mode-dropdown', 'value'),
+              Input('my-ims-dropdown', 'value'))
 
-def feats_update(processed_df,value):
+def feats_update(processed_df,value, ims):
     df_f = pd.read_json(processed_df, orient='split')
     feats_md = feature_generator(df_f)
     features,labels = generate_data_loader(df_f,feats_md,option='predict')
     mode = mode_abbr[value]
-    model_file = './models/'+mode+'_chkpts.pth'
+    model_file = './models/'+mode+'_'+ims+'_chkpts.pth'
     setattr(__main__, "Model", Model)
     setattr(__main__, "MPLayer", MPLayer)
     checkpoint = torch.load(model_file)
     model = load_checkpoint(checkpoint)
-    with open("./models/"+mode+"_mgat-ccs-model.pkl", "rb") as f:
+    with open("./models/"+mode+'_'+ims+"_mgat-ccs-model.pkl", "rb") as f:
         gbmodel = pickle.load(f)
     test_set,test_adduct_type,test_adduct_code,test_class_code = get_ccs_pair(features)
     test_feats_indices, test_feats_embed = model_embed_ccs(model,test_set)
     y_pred = gbmodel.predict(test_feats_embed)
-    df_f['CCS'] = np.asarray(y_pred)
-    df_f['CCS'] = df_f['CCS'].round(decimals=3)
-    result_df = df_f[['Name','SMI','CCS','Adduct','Compound Class']]
+    df_f['Predicted CCS'] = np.asarray(y_pred)
+    df_f['Predicted CCS'] = df_f['Predicted CCS'].round(decimals=3)
+    df_f['IMS Mode'] = ims
+    result_df = df_f[['Name','Predicted CCS','Adduct','Compound Class','IMS Mode','SMI']]
     return result_df.to_json(orient='split')
 
 @app.callback(Output('print-data-mol', 'children'),

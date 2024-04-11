@@ -11,6 +11,7 @@ from dash import html, Input, Output, dcc, State, Dash, dash_table, callback, ct
 from maindash import app
 from components.overview import overview
 from components.mgat import mgat
+from components.documentation import documentation
 from components.about import about
 
 #######################################
@@ -58,6 +59,15 @@ sidebar = html.Div(
                 ),
                 dbc.NavLink(
                     [
+                        html.I(className="fa fa-book me-2"),
+                        html.Span("Documentation"),
+                    ],
+                    href="/documentation",
+                    active="exact",
+                ),
+
+                dbc.NavLink(
+                    [
                         html.I(className="fas fa-user me-2"),
                         html.Span("About"),
                     ],
@@ -98,6 +108,8 @@ def render_page_content(pathname):
         return overview.overview_layout()
     elif pathname == "/mgat":
         return mgat.mgat_layout()
+    elif pathname == "/documentation":
+        return documentation.documentation_layout()
     elif pathname == "/about":
         return about.about_layout()
     return dbc.Container(
