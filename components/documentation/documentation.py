@@ -22,7 +22,7 @@ def documentation_layout():
                     html.Div(
                         [
                             html.Img(
-                                src="https://images.unsplash.com/photo-1614854262340-ab1ca7d079c7?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                                src="https://images.unsplash.com/photo-1641160858304-6aded85fa2c4?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                                 style={
                                     "width": "100%",
                                     "height": "auto",
@@ -56,6 +56,16 @@ def documentation_layout():
                 },
             ),
             html.Br(),
+            html.Div(
+                style={"display": "flex"},
+                children=[
+                    dcc.Markdown(
+                        children=read_file_as_str("./utils/markdown/documentation/documentation.md"),
+                        mathjax=True,
+                    ),
+                ],
+            ),
+            html.Br(),
             html.Hr(),
             html.H3(
                 "Procedure to peform CCS prediction using MGAT-CCS",
@@ -63,7 +73,7 @@ def documentation_layout():
             ),
             html.Br(),
             html.Img(
-                src="https://github.com/mmetalab/mgat-ccs/raw/main/images/workflow.png",
+                src="https://github.com/mmetalab/mgat-ccs/raw/main/images/tutorials.png",
                 style={
                     "width": "1200px",
                     "display": "block",
