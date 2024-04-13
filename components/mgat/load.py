@@ -78,7 +78,8 @@ def update_graph_tt(uploaded_df):
     print(df)
     return html.Div([
         html.Hr(),  # horizontal line
-        html.H5('Loaded molecule data.'),
+        html.H5('Input molecule data',
+                style={'width': '100%', "textAlign": "center", "color": "#082446"}),
         dbc.Container(
         [
             dbc.Spinner(
@@ -104,7 +105,7 @@ def update_graph_tt(uploaded_df):
             'margin-top': '50px'
         }
     ),
-        html.Hr(),  # horizontal line
+        html.Br(),  # horizontal line
     ])
 
 
@@ -136,7 +137,7 @@ def load_layout():
                 html.Div(id='output-data-upload'),
                 
             ],
-            style={'width': '100%', "textAlign": "center", "color": "#082446"},)
+            )
         ]
     )
 
@@ -179,7 +180,9 @@ def update_graph(uploaded_df):
     df = pd.read_json(uploaded_df, orient='split')
     return html.Div([
         html.Hr(),  # horizontal line
-        html.H5('Uploaded molecule data.'),
+        html.H5('Uploaded molecule data',
+                style={'width': '100%', "textAlign": "center", "color": "#082446"}),
+        html.Br(),
         dbc.Container(
         [
             dbc.Spinner(
@@ -197,7 +200,7 @@ def update_graph(uploaded_df):
                         'text-align': 'center'
                     },
                     style_table={'overflowX': 'auto'},
-                    style_data={
+                    style_cell={
                         'font-family': 'Arial',
                         'text-align': 'center'
                     }
@@ -207,10 +210,9 @@ def update_graph(uploaded_df):
         style={
             'font-family': 'Arial',
             'width': '100%',
-            # 'margin-top': '50px'
         }
     ),
-        html.Hr(),  # horizontal line
+        html.Br(),
     ])
 
 def load_info():

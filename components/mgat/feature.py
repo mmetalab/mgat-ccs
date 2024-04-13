@@ -71,12 +71,12 @@ def feature_layout():
             ),
             html.Br(),
             html.H5(id='mode-output'),
-            html.Br(),
-            dbc.Button('Click to Run', id='btn-nclicks-feats', n_clicks=0),
-            html.P("\nClick the above button again if you selected a different mode."),
+            dbc.Button('Run prediction', id='btn-nclicks-feats', n_clicks=0),
+            dbc.Tooltip("Click the button again if you change the mode.",
+            target="btn-nclicks-feats",
+            ),
             html.Br(),
             dcc.Loading(id="ls-loading-1", children=[html.Div(html.H5(id='CCS'))], type="default", debug=False),
-            # html.Div(id='container-button-feats'), 
         ]
     )
     return layout
@@ -89,40 +89,8 @@ def feature_layout():
 def update_output(ionmode,ims):
     return f'You have selected {ionmode} by {ims}.'
 
-# @callback(Output("container-button-feats", "children"), 
-#           Input('btn-nclicks-feats', 'n_clicks'))
-
-# def displayClick(n_clicks):
-#     if 'btn-nclicks-feats' == ctx.triggered_id:
-#         time.sleep(1)
-#         return html.Div(
-#                 html.H5(id='print-data-mol'),
-#             )
-
-# @app.callback(
-#     Output('processed-feature', 'data'),
-#     Input('my-mode-dropdown', 'value'),
-#     Input('loaded-data-input', 'data'),
-#     Input('loaded-data', 'data'),
-#     Input('btn-nclicks-feats', 'n_clicks')
-# )
-
-# def feats_convert(value,loaded_df,uploaded_df,n_clicks):
-#     # if 'btn-nclicks-feats' == ctx.triggered_id:
-#     #     time.sleep(1)
-#     if loaded_df is not None:
-#         df = pd.read_json(loaded_df, orient='split')
-#     if uploaded_df is not None:
-#         df = pd.read_json(uploaded_df, orient='split')
-#     mode = mode_abbr[value]
-#     moldata = cmp_classify(df,mode)
-#     temp = pd.DataFrame(columns=['Adduct'])
-#     temp['Adduct'] = list(mode_dict[mode].keys())
-#     moldata = moldata.merge(temp, how='cross')
-#     df_f = encode_adduct(moldata,mode)
-#     return df_f.to_json(orient='split')
-
 @app.callback(Output('CCS', 'children'),
+              Output('predicted-ccs', 'data'),
             Input('my-mode-dropdown', 'value'),
             Input('my-ims-dropdown', 'value'),
             Input('loaded-data-input', 'data'),
@@ -142,7 +110,6 @@ def feats_update(value, ims, loaded_df,uploaded_df, n_clicks):
         temp['Adduct'] = list(mode_dict[mode].keys())
         moldata = moldata.merge(temp, how='cross')
         df_f = encode_adduct(moldata,mode)
-        # df_f = pd.read_json(processed_df, orient='split')
         feats_md = feature_generator(df_f)
         features,labels = generate_data_loader(df_f,feats_md,option='predict')
         mode = mode_abbr[value]
@@ -160,9 +127,12 @@ def feats_update(value, ims, loaded_df,uploaded_df, n_clicks):
         df_f['Predicted CCS'] = df_f['Predicted CCS'].round(decimals=3)
         df_f['IMS Mode'] = ims
         result_df = df_f[['Name','Predicted CCS','Adduct','Compound Class','IMS Mode','SMI']]
+        ccs_df = result_df.copy()
         return html.Div([
+            html.Hr(),
+            html.H5('Predicted CCS value for each molecule',
+                    style={'width': '100%', "textAlign": "center", "color": "#082446"}),
             html.Br(),
-            html.Div('The predicted CCS value for each molecule is shown below.'),
             dbc.Container(
             [
                 dbc.Spinner(
@@ -177,19 +147,22 @@ def feats_update(value, ims, loaded_df,uploaded_df, n_clicks):
                         style_header={
                             'font-family': 'Arial',
                             'font-weight': 'bold',
-                            'text-align': 'center'
+                            'text-align': 'center',
+                            'font_size': '16px',
                         },
                         style_table={'overflowX': 'auto'},
-                        style_data={
+                        style_cell={
                             'font-family': 'Arial',
-                            'text-align': 'center'
+                            'text-align': 'center',
+                            'font_size': '16px',
                         }
                     )
                 )
             ],
             style={
                 'font-family': 'Arial',
-                'margin-top': '50px'
+                'width': '100%',
+                "color": "#082446"
             }
         ),
             html.Div(
@@ -198,57 +171,7 @@ def feats_update(value, ims, loaded_df,uploaded_df, n_clicks):
             dcc.Download(id="download-dataframe-csv"),
         ]
         )
-        ])
-
-        # return result_df.to_json(orient='split')
-
-# @app.callback(Output('print-data-mol', 'children'),
-#               Input('btn-nclicks-feats', 'n_clicks'),
-#               Input('predicted-ccs', 'data'))
-
-# def print_result(n_clicks,result_df):
-#     if 'btn-nclicks-feats' == ctx.triggered_id:
-#         time.sleep(1)
-#         result_df = pd.read_json(result_df, orient='split')
-#         return html.Div([
-#             html.Br(),
-#             html.Div('The predicted CCS value for each molecule is shown below.'),
-#             dbc.Container(
-#             [
-#                 dbc.Spinner(
-#                     dash_table.DataTable(
-#                         result_df.to_dict('records'),
-#                         id='dash-table',
-#                         columns=[
-#                             {'name': column, 'id': column}
-#                             for column in result_df.columns
-#                         ],
-#                         page_size=10,
-#                         style_header={
-#                             'font-family': 'Arial',
-#                             'font-weight': 'bold',
-#                             'text-align': 'center'
-#                         },
-#                         style_table={'overflowX': 'auto'},
-#                         style_data={
-#                             'font-family': 'Arial',
-#                             'text-align': 'center'
-#                         }
-#                     )
-#                 )
-#             ],
-#             style={
-#                 'font-family': 'Arial',
-#                 'margin-top': '50px'
-#             }
-#         ),
-#             html.Div(
-#         [
-#             dbc.Button("Download CSV", id="btn_csv", n_clicks=0),
-#             dcc.Download(id="download-dataframe-csv"),
-#         ]
-#         )
-#         ])
+        ]),ccs_df.to_json(orient='split')
 
 @callback(
     Output("download-dataframe-csv", "data"),
@@ -256,6 +179,7 @@ def feats_update(value, ims, loaded_df,uploaded_df, n_clicks):
     Input('predicted-ccs', 'data'),
     prevent_initial_call=True,
 )
+
 def func(n_clicks,df):
     df = pd.read_json(df, orient='split')
     if "btn_csv" == ctx.triggered_id:   
