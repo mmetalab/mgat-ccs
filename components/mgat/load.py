@@ -1,4 +1,4 @@
-from dash import html, Input, Output, dcc, State, Dash, dash_table, callback
+from dash import html, Input, Output, dcc, State, dash_table
 import pandas as pd
 import dash_bootstrap_components as dbc
 import base64

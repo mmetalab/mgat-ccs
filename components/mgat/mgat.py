@@ -1,13 +1,6 @@
-
-
-from dash import html, Input, Output, dcc, Dash, callback
+from dash import html, Input, Output
 import dash_bootstrap_components as dbc
-from utils.file_operation import read_file_as_str
 from maindash import app
-import dash_uploader as du
-import pandas as pd
-from dash.dependencies import State
-import dash_table
 from components.mgat.load import load_info
 from components.mgat.feature import feature_info
 

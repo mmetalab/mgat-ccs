@@ -1,12 +1,11 @@
 # dash imports
 import dash
-import json
 from dash import html
 from dash import Input
 from dash import Output
 from dash import dcc
 import dash_bootstrap_components as dbc
-from dash import html, Input, Output, dcc, State, Dash, dash_table, callback, ctx
+from dash import html, Input, Output, dcc
 # file imports
 from maindash import app
 from components.overview import overview
@@ -139,3 +138,5 @@ def render_page_content(pathname):
 
 if __name__ == "__main__":
     app.run_server(host='0.0.0.0', port=8080)
+
+# gunicorn webapp:server
