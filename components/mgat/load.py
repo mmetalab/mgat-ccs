@@ -43,8 +43,8 @@ def load_preset_layout():
             html.Div([
                 dcc.Textarea(
                     id='textarea-state-example',
-                    value='Acetylcarnitine,CC(=O)O[C@H](CC(=O)[O-])C[N+](C)(C)C\nDaidzein,C1=CC(=CC=C1C2=COC3=C(C2=O)C=CC(=C3)O)O\n'
-                    'Chlortetracycline,C[C@]1(c2c(ccc(c2C(=O)C3=C([C@]4([C@@H](C[C@@H]31)[C@@H](C(=C(C4=O)C(=N)O)O)N(C)C)O)O)O)Cl)O\n'
+                    value='Lignoceric Acid,CCCCCCCCCCCCCCCCCCCCCCCC(=O)O\n'
+                    'LPE(16:0),C(OP(OCCN)(O)=O)[C@]([H])(OC(=O)CCCCCCCCCCCCCCC)CO\n'
                     'Palmitic acid,CCCCCCCCCCCCCCCC(=O)O',
                     style={'width': '100%', 'height': 100},
                 ),
@@ -75,7 +75,6 @@ def update_output(n_clicks, value):
 def update_graph_tt(uploaded_df):
     # more generally, this line would be
     df = pd.read_json(uploaded_df, orient='split')
-    print(df)
     return html.Div([
         html.Hr(),  # horizontal line
         html.H5('Input molecule data',
@@ -125,11 +124,12 @@ def load_layout():
                         html.A('Select Files')
                     ]),
                     style={
-                        'width': '100%',
-                        'height': '100px',
-                        'borderStyle': 'dashed',
-                        'borderRadius': '5px',
-                        'textAlign': 'center',
+                    'width': '100%',
+                    'height': '100px',
+                    'lineHeight': '100px',
+                    'borderStyle': 'dashed',
+                    'borderRadius': '5px',
+                    'textAlign': 'center',
                     },
                     # Allow multiple files to be uploaded
                     multiple=True
@@ -137,7 +137,11 @@ def load_layout():
                 html.Div(id='output-data-upload'),
                 
             ],
-            )
+            ),
+            html.P(
+                "Due to the limitation of computational resources, the recommended number of molecules is 20-50.",
+                style={'width': '100%',"textAlign": "left", "color": "#082446"},
+            ),
         ]
     )
 

@@ -98,7 +98,7 @@ def update_output(ionmode,ims):
             Input('btn-nclicks-feats', 'n_clicks'))
 
 def feats_update(value, ims, loaded_df,uploaded_df, n_clicks):
-    if 'btn-nclicks-feats' == ctx.triggered_id:
+    if 'btn-nclicks-feats' == ctx.triggered_id and n_clicks > 0:
         time.sleep(1)
         if loaded_df is not None:
             df = pd.read_json(loaded_df, orient='split')
@@ -127,7 +127,6 @@ def feats_update(value, ims, loaded_df,uploaded_df, n_clicks):
         df_f['Predicted CCS'] = df_f['Predicted CCS'].round(decimals=3)
         df_f['IMS Mode'] = ims
         result_df = df_f[['Name','Predicted CCS','Adduct','Compound Class','IMS Mode','SMI']]
-        ccs_df = result_df.copy()
         return html.Div([
             html.Hr(),
             html.H5('Predicted CCS value for each molecule',
@@ -171,7 +170,7 @@ def feats_update(value, ims, loaded_df,uploaded_df, n_clicks):
             dcc.Download(id="download-dataframe-csv"),
         ]
         )
-        ]),ccs_df.to_json(orient='split')
+        ]),result_df.to_json(orient='split')
 
 @callback(
     Output("download-dataframe-csv", "data"),
@@ -182,7 +181,7 @@ def feats_update(value, ims, loaded_df,uploaded_df, n_clicks):
 
 def func(n_clicks,df):
     df = pd.read_json(df, orient='split')
-    if "btn_csv" == ctx.triggered_id:   
+    if "btn_csv" == ctx.triggered_id and n_clicks > 0:   
         return dcc.send_data_frame(df.to_csv, "predicted_ccs.csv")
 
 def feature_info():
