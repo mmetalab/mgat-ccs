@@ -54,7 +54,8 @@ urllib3==2.2.0
 Werkzeug==3.0.1
 xarray==2023.1.0
 zipp==3.17.0
-torch == 2.2.1
+torch==2.1.0
+torchdata==0.7.0
 dgl == 2.1.0
 dgllife == 0.3.2
 PyYAML == 6.0.1
